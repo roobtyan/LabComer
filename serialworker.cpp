@@ -3,6 +3,15 @@
 #include <QThread>
 #include <QMessageBox>
 #include "QHelper.h"
+#include "dataprocess.h"
+#include <QDateTime>
+
+/**
+ * 多线程串口开发流程：
+ * 1. 定义Thread并将serial对象移动到进程中
+ * 2. connect函数绑定初始化方法
+ * 3. 启动线程
+ */
 
 SerialWorker::SerialWorker(QObject *parent)
     : QObject(parent)
@@ -15,6 +24,12 @@ SerialWorker::~SerialWorker()
     delete port;
 }
 
+void SerialWorker::initSerialPort()
+{
+    this->port = new QSerialPort();
+    connect(port, &QSerialPort::readyRead,
+            this, &SerialWorker::doDataReciveWork);        // 主线程通知子线程接收数据的信号
+}
 
 bool SerialWorker::openThreadPort(QSerialPort *port, QString portName, qint32 baudRate,
                            QSerialPort::DataBits dataBits, QSerialPort::Parity parity,
@@ -37,83 +52,47 @@ bool SerialWorker::openThreadPort(QSerialPort *port, QString portName, qint32 ba
     }
 }
 
-void SerialWorker::openFlow(QString COM, QString command)
+void SerialWorker::openPort(QString com, QString buad, QString check, int comId)
 {
-    if(openThreadPort(port, COM, QSerialPort::Baud2400, QSerialPort::Data7, QSerialPort::NoParity,
-                 QSerialPort::OneStop, QSerialPort::NoFlowControl))
-    {
-        emit openPortSuccess();
-        port -> write(command.toLocal8Bit());
+    qint32 baudRate = buad.toInt();    // 定义波特率
+    QSerialPort::Parity comParity = QSerialPort::NoParity;  // 定义校验位，默认无校验
+    // 通过条件判断来选择校验位
+    if (check == "NONE") {
+        comParity = QSerialPort::NoParity;
+    } else if (check == "ODD") {
+        comParity = QSerialPort::OddParity;
+    } else if (check == "EVEN") {
+        comParity = QSerialPort::EvenParity;
+    }
+
+    // 开启串口
+    if(openThreadPort(port, com, baudRate, QSerialPort::Data7, comParity,
+                 QSerialPort::OneStop, QSerialPort::NoFlowControl)) {
+        emit openPortSuccess("open " + com + "[" + buad + "]" + " success!", comId); // 打开成功返回
+    } else {
+        emit openPortSuccess("open " + com + "fail", comId);    // 打开失败返回
     }
 }
 
-void SerialWorker::openPress(QString COM, QString command)
+void SerialWorker::doDataSendWork(QString command)
 {
-    // 波特率9600，数据位8位，无校验位，一位停止位
-    if(openThreadPort(port, COM, QSerialPort::Baud9600, QSerialPort::Data8, QSerialPort::NoParity,
-             QSerialPort::OneStop, QSerialPort::NoFlowControl))
-    {
-        emit openPortSuccess();
-        port -> write(command.toLocal8Bit());
-    }
-}
-
-void SerialWorker::openTemp(QString COM, QString command, int flag)
-{
-    // 将线程定义为温度标识
-    tempFlag = flag;
-    //具体数据还未确定
-    if(openThreadPort(port, COM, QSerialPort::Baud9600, QSerialPort::Data8, QSerialPort::NoParity,
-             QSerialPort::OneStop, QSerialPort::NoFlowControl))
-    {
-        emit openPortSuccess();
-        port -> write(command.toLocal8Bit());
-    }
-}
-
-void SerialWorker::initSerialPort()
-{
-    this->port = new QSerialPort();
-    connect(port, &QSerialPort::readyRead,
-            this, &SerialWorker::doDataReciveWork);        // 主线程通知子线程接收数据的信号
-}
-
-void SerialWorker::doDataSendWork(const QByteArray data)
-{
-//    qDebug() <<  "子线程槽函数发送数据：" << data << "线程ID：" << QThread::currentThreadId();
-    port -> write(data);
+    port -> write(command.toUtf8());
 }
 
 void SerialWorker::doDataReciveWork()
 {
     // 1.收到数据
     QByteArray buffer = port->readAll();
+    QString bufStr = QString::fromLocal8Bit(buffer);
+    QString result;
     // 2.进行数据处理
-    resultStr.append(buffer);
-    if(resultStr.contains("\r\n"))
-    {
-        // 判断是否为温度计线程
-        if (tempFlag == 1)
-        {
-            // 根据温度计数据的返回格式，截取第7~10位置的数据
-            QString tempRes = resultStr.mid(6, 4);
-//            qDebug() << "截取的温度字符串是：" << tempRes;
-            emit sendResultToTemp(tempRes);
-            resultStr.clear();
-        }
-        else
-        {
-            // 区分流量数据及压力数据
-            if (resultStr.contains("sccm"))
-            {
-                emit sendResultToGui(resultStr);
-                resultStr.clear();
-            }
-            else
-            {
-                emit sendResultToPress(resultStr);
-                resultStr.clear();
-            }
-        }
+    // 包含EB90即为遥测指令读取的数据，需要经过特殊处理
+    if (bufStr.contains("EB90")) {
+        DataProcess *dataProcess = new DataProcess();
+        result = dataProcess -> mainControlDataProcess(buffer);
+    } else {
+        result = bufStr + "\n";
     }
+//    QString sysTime = QDateTime::currentDateTime().toString("hh:mm:ss");
+    emit readyRead(result);
 }

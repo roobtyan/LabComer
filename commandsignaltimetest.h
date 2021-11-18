@@ -15,6 +15,14 @@ public:
     explicit CommandSignalTimeTest(QWidget *parent = nullptr);
     ~CommandSignalTimeTest();
 
+signals:
+    void sendsignalTimeTestCommand(QString str);
+
+private slots:
+    void on_pushButton_clicked();
+
+    QString signalTimeTestValues(QString str);
+
 private:
     Ui::CommandSignalTimeTest *ui;
 };

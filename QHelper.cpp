@@ -1,5 +1,4 @@
 #include "QHelper.h"
-
 #include <iostream>
 #include <bitset>
 #include <QDebug>
@@ -79,4 +78,44 @@ long double hexToDec(QString hexData)
 
 void removeSpace(QString *str) {
     str ->replace(" ", "");
+}
+
+unsigned char *qStringToUChar(QString str) {
+    unsigned char *result = nullptr;
+    string resStr = str.toStdString();
+    if (str != "") {
+        result = (unsigned char *)resStr.c_str();
+    }
+    qDebug() << *result;
+    return result;
+}
+
+QString uCharToQString(unsigned char uchar)
+{
+    QString str(uchar);
+    qDebug() << str;
+    return str;
+}
+
+void commandResultGen(QString *strPtr, QString opCommand, int numSize, unsigned char lookTable[], unsigned short CRC)
+{
+    strPtr -> append(opCommand);
+    for (int i = 0; i < numSize; i++)
+    {
+        QString qUnicode = QString("%1").arg(lookTable[i], 2, 16);
+        strPtr -> append(qUnicode);
+    }
+    // CRC保存
+    strPtr -> append(QString("%1").arg(CRC, 4, 16));
+    strPtr -> append("09D7");
+    // 转成大写并空位补0
+    strPtr -> replace(" ", "0");
+}
+
+QString hexToFloat(QString str)
+{
+    int c = str.toInt(nullptr, 16);
+    float d = *(float*)&c;
+    QString radiation = QString("%1").arg(d);
+    return radiation;
 }

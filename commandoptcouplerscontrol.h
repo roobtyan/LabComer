@@ -15,6 +15,16 @@ public:
     explicit CommandOptCouplersControl(QWidget *parent = nullptr);
     ~CommandOptCouplersControl();
 
+    QString commandOptCouplersControlValues(QString opto_coupler_num, QString opto_coupler_state);
+
+signals:
+
+    void sendOptCouplersControlCommand(QString result);
+
+private slots:
+
+    void on_pushButton_clicked();
+
 private:
     Ui::CommandOptCouplersControl *ui;
 };

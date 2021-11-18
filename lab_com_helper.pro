@@ -1,4 +1,5 @@
 QT       += core gui
+QT       += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,14 +17,63 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    QHelper.cpp \
+    commandheating.cpp \
+    commandhempjetadvanced.cpp \
+    commandopenhempjet.cpp \
+    commandopenhet.cpp \
+    commandoptcouplerscontrol.cpp \
+    commandsignaltimetest.cpp \
+    commandspacewetherstation.cpp \
+    commandupdatetable1.cpp \
+    commandupdatetable2.cpp \
+    commandupdatetable3.cpp \
+    commandvalvescontrol.cpp \
+    dataprocess.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    serialworker.cpp \
+    thrustercontrol.cpp \
+    timedtask.cpp
 
 HEADERS += \
-    mainwindow.h
+    QHelper.h \
+    commandheating.h \
+    commandhempjetadvanced.h \
+    commandopenhempjet.h \
+    commandopenhet.h \
+    commandoptcouplerscontrol.h \
+    commandsignaltimetest.h \
+    commandspacewetherstation.h \
+    commandupdatetable1.h \
+    commandupdatetable2.h \
+    commandupdatetable3.h \
+    commandvalvescontrol.h \
+    dataprocess.h \
+    mainwindow.h \
+    serialworker.h \
+    thrustercontrol.h \
+    timedtask.h
 
 FORMS += \
-    mainwindow.ui
+    commandheating.ui \
+    commandhempjetadvanced.ui \
+    commandopenhempjet.ui \
+    commandopenhet.ui \
+    commandoptcouplerscontrol.ui \
+    commandsignaltimetest.ui \
+    commandspacewetherstation.ui \
+    commandupdatetable1.ui \
+    commandupdatetable2.ui \
+    commandupdatetable3.ui \
+    commandvalvescontrol.ui \
+    mainwindow.ui \
+    thrustercontrol.ui
+
+RC_FILE += AppIcon.rc
+
+OTHER_FILES += \
+    AppIcon.rc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

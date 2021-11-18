@@ -12,11 +12,6 @@ public:
     explicit SerialWorker(QObject *parent = nullptr);
     ~SerialWorker();
 
-    QSerialPort *port;
-    // 全局变量
-    QString resultStr;      // 用于接收最终的返回值
-    bool tempFlag = 0;      // 判断是否为温度计线程
-
     /**
      * @brief 打开串口
      * @param port
@@ -39,10 +34,15 @@ public:
     /**
      * @brief 关闭串口
      */
-    void closePort()
+    void closePort(int comId)
     {
         port->clear();
         port->close();
+        QString result;
+        result.append("close COM");
+        result.append(comId);
+        result.append(" success!");
+        emit closePortStatus(result, comId);
     }
 
     /**
@@ -65,50 +65,50 @@ signals:
      * @brief 当数据准备好就读取返回数据
      * @param data
      */
-    QString readyRead(QByteArray data);
+    QString readyRead(QString data);
 
     /**
-     * @brief 传送数据到流量计界面
+     * @brief 发送数据到GUI
      * @param result
      */
     void sendResultToGui(QString result);
 
     /**
-     * @brief 发送数据到压力计界面
-     * @param result
+     * @brief 打开串口成功或失败
      */
-    void sendResultToPress(QString result);
+    void openPortSuccess(QString message, int comId);
 
     /**
-     * @brief 发送数据到温度计界面
-     * @param result
+     * @brief closePortStatus
+     * @param message
+     * @param comId
      */
-    void sendResultToTemp(QString result);
-
-    /**
-     * @brief 打开串口成功
-     */
-    void openPortSuccess();
+    void closePortStatus(QString message, int comId);
 
 public slots:
 
-    void openFlow(QString COM, QString command);
-
-    void openPress(QString COM, QString command);
-
-    void openTemp(QString COM, QString command, int tempFlag);
+    /**
+     * @brief openPort
+     * @param com
+     * @param buad
+     * @param check
+     * @param comId 用于判断使用的是哪个串口模块 1/2……
+     */
+    void openPort(QString com, QString buad, QString check, int comId);
 
     /**
      * @brief 多线程数据发送
      * @param data
      */
-    void doDataSendWork(const QByteArray data);
+    void doDataSendWork(QString command);
     /**
      * @brief 多线程数据接收
      */
     void doDataReciveWork();
 
 private:
+
+    QSerialPort *port;
 };
 
 #endif // SERIALWORKER_H
