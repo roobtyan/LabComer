@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include "QHelper.h"
 #include "dataprocess.h"
+#include <remotecommand.h>
 #include <QDateTime>
 
 /**
@@ -66,7 +67,7 @@ void SerialWorker::openPort(QString com, QString buad, QString check, int comId)
     }
 
     // 开启串口
-    if(openThreadPort(port, com, baudRate, QSerialPort::Data7, comParity,
+    if(openThreadPort(port, com, baudRate, QSerialPort::Data8, comParity,
                  QSerialPort::OneStop, QSerialPort::NoFlowControl)) {
         emit openPortSuccess("open " + com + "[" + buad + "]" + " success!", comId); // 打开成功返回
     } else {
@@ -76,23 +77,23 @@ void SerialWorker::openPort(QString com, QString buad, QString check, int comId)
 
 void SerialWorker::doDataSendWork(QString command)
 {
-    port -> write(command.toUtf8());
+    QByteArray qb = QByteArray::fromHex (command.toLatin1().data());
+    port -> write(qb);
 }
 
 void SerialWorker::doDataReciveWork()
 {
     // 1.收到数据
     QByteArray buffer = port->readAll();
-    QString bufStr = QString::fromLocal8Bit(buffer);
-    QString result;
+    QString bufStr = buffer.toHex().toUpper();
     // 2.进行数据处理
-    // 包含EB90即为遥测指令读取的数据，需要经过特殊处理
+    // 包含EB90即为遥测指令读取的数据，需要经过特殊处理,发送到数据表
     if (bufStr.contains("EB90")) {
         DataProcess *dataProcess = new DataProcess();
-        result = dataProcess -> mainControlDataProcess(buffer);
+        QList<RemoteCommand> remoteList = dataProcess -> mainControlDataProcess(bufStr);
+        emit readyReadTable(remoteList);
     } else {
-        result = bufStr + "\n";
+        QString result = bufStr + "\n";
+        emit readyRead(result);
     }
-//    QString sysTime = QDateTime::currentDateTime().toString("hh:mm:ss");
-    emit readyRead(result);
 }

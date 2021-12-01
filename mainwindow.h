@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <remotecommand.h>
 #include <QMainWindow>
 #include <QThread>
 #include <QSerialPort>
@@ -28,6 +29,7 @@ public:
     /* 接收返回数据 */
     void com1GetMessage(QString message);
     void com2GetMessage(QString message);
+    void com1GetTableInfo(QList<RemoteCommand> remoteList);
 
     /**
      * @brief 回调数据
@@ -158,6 +160,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    int tableNums;
     // 两个com线程
     QThread com1Thread;
     QThread com2Thread;

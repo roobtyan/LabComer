@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSerialPort>
 #include <QSerialPortInfo>
+#include <remotecommand.h>
 
 class SerialWorker : public QObject
 {
@@ -66,6 +67,8 @@ signals:
      * @param data
      */
     QString readyRead(QString data);
+
+    void readyReadTable(QList<RemoteCommand> remoteList);
 
     /**
      * @brief 发送数据到GUI

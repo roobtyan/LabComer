@@ -1,5 +1,6 @@
 #include "dataprocess.h"
 #include "QDebug"
+#include "QList"
 
 DataProcess::DataProcess()
 {
@@ -110,13 +111,14 @@ DataProcess::DataProcess()
     remoteNameList.append(REMOTE_NAME_105);
 }
 
-QString DataProcess::mainControlDataProcess(QString str)
+QList<RemoteCommand> DataProcess::mainControlDataProcess(QString str)
 {
     // 数据处理流程
     // 1. 去掉帧头、帧尾
     // 2. 用8个字符为1组（4B），转为uint
     // 3. 按照表格分类，将数据按需求转换
     QString result;
+    QList<RemoteCommand> remoteList;
     QString resultTemp = str;
     // 先去掉帧头帧尾
     resultTemp = resultTemp.mid(8, resultTemp.size()-16);
@@ -124,23 +126,28 @@ QString DataProcess::mainControlDataProcess(QString str)
     QStringList strList = strSplitByLength(resultTemp, 8);
     // 通过遍历，计算数值，返回结果
     for(int i = 1; i <= strList.size(); i++) {
-        // 得到定义的值
-        result.append("[" + remoteNameList[i] + "]");
+        // 设置Remote
+        RemoteCommand *remote = new RemoteCommand();
+        remote -> setRemoteNumber(QString::number(i));
+        remote -> setRemoteName(remoteNameList[i-1]);
+
         //  无符号整型：1~6、22、42~46、53~55、63~67、103~105
         //  单精度浮点：7~21、23~41、47~52、56~62、68~102
         if ((i >= 1 && i <= 6) || i == 22 || (i >= 42 && i <= 46) ||
                 (i >=53 && i <=55) || (i >= 63 && i <= 67) || (i >= 103 && i <= 105)) {
             long double res = hexToDec(strList[i-1]);
             QString decStr = QString::number(res, '.', 0);
-            result.append("[" + decStr + "]");
+            remote -> setRemoteValue(decStr);
         } else if ((i >= 7 && i <= 21) || (i >= 23 && i <= 41) ||
                    (i >= 47 && i <= 52) || (i >= 56 && i<= 62) || (i >= 68 && i <= 102)) {
             QString floatStr = hexToFloat(strList[i-1]);
-            result.append("[" + floatStr + "]");
+            remote -> setRemoteValue(floatStr);
         }
-        result.append("[" + strList[i-1] + "]\n");
+        remote -> setRemoteSource(strList[i-1]);
+        // 加入集合
+        remoteList.append(*remote);
     }
-    return result;
+    return remoteList;
 }
 
 QStringList DataProcess::strSplitByLength(QString str, int n)

@@ -473,9 +473,9 @@ QScrollBar::right-arrow:horizontal {
      <property name="geometry">
       <rect>
        <x>1070</x>
-       <y>30</y>
+       <y>23</y>
        <width>351</width>
-       <height>111</height>
+       <height>141</height>
       </rect>
      </property>
      <property name="title">
@@ -533,21 +533,46 @@ QScrollBar::right-arrow:horizontal {
       </item>
       <item>
        <property name="text">
+        <string>14400</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>19200</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>38400</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>56000</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>115200</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>128000</string>
        </property>
       </item>
      </widget>
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>178</x>
+        <x>195</x>
         <y>30</y>
-        <width>72</width>
+        <width>51</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>Check bit</string>
+       <string>Parity</string>
       </property>
      </widget>
      <widget class="QComboBox" name="com1_check_comboBox">
@@ -579,7 +604,7 @@ QScrollBar::right-arrow:horizontal {
       <property name="geometry">
        <rect>
         <x>250</x>
-        <y>60</y>
+        <y>100</y>
         <width>81</width>
         <height>31</height>
        </rect>
@@ -588,13 +613,41 @@ QScrollBar::right-arrow:horizontal {
        <string>open</string>
       </property>
      </widget>
+     <widget class="QComboBox" name="com1_dataBites_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>70</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>8</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>181</x>
+        <y>69</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>DataBits</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="geometry">
       <rect>
        <x>20</x>
        <y>820</y>
-       <width>1041</width>
+       <width>1031</width>
        <height>70</height>
       </rect>
      </property>
@@ -614,7 +667,7 @@ QScrollBar::right-arrow:horizontal {
      <widget class="QPushButton" name="com1_send_pushButton">
       <property name="geometry">
        <rect>
-        <x>940</x>
+        <x>930</x>
         <y>26</y>
         <width>93</width>
         <height>28</height>
@@ -629,9 +682,9 @@ QScrollBar::right-arrow:horizontal {
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>20</y>
-       <width>1041</width>
-       <height>791</height>
+       <y>598</y>
+       <width>1031</width>
+       <height>211</height>
       </rect>
      </property>
     </widget>
@@ -670,7 +723,7 @@ QScrollBar::right-arrow:horizontal {
        </rect>
       </property>
       <property name="text">
-       <string>update lookup table 1</string>
+       <string>Update lookup table 1</string>
       </property>
      </widget>
      <widget class="QPushButton" name="com1_command3_pushButton">
@@ -683,7 +736,7 @@ QScrollBar::right-arrow:horizontal {
        </rect>
       </property>
       <property name="text">
-       <string>update lookup table2</string>
+       <string>Update lookup table2</string>
       </property>
      </widget>
      <widget class="QPushButton" name="com1_command4_pushButton">
@@ -696,7 +749,7 @@ QScrollBar::right-arrow:horizontal {
        </rect>
       </property>
       <property name="text">
-       <string>update lookup table 3</string>
+       <string>Update lookup table 3</string>
       </property>
      </widget>
      <widget class="QPushButton" name="com1_command5_pushButton">
@@ -847,7 +900,7 @@ QScrollBar::right-arrow:horizontal {
      <property name="geometry">
       <rect>
        <x>1070</x>
-       <y>160</y>
+       <y>176</y>
        <width>351</width>
        <height>80</height>
       </rect>
@@ -859,7 +912,7 @@ QScrollBar::right-arrow:horizontal {
       <property name="geometry">
        <rect>
         <x>233</x>
-        <y>30</y>
+        <y>35</y>
         <width>101</width>
         <height>28</height>
        </rect>
@@ -878,9 +931,39 @@ QScrollBar::right-arrow:horizontal {
        </rect>
       </property>
       <property name="text">
-       <string>Auto</string>
+       <string>AUTO</string>
       </property>
      </widget>
+    </widget>
+    <widget class="QTableWidget" name="Remote_tableWidget">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>1031</width>
+       <height>551</height>
+      </rect>
+     </property>
+     <column>
+      <property name="text">
+       <string>RemoteNumber</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>RemoteName</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Values</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Souce</string>
+      </property>
+     </column>
     </widget>
    </widget>
    <widget class="QGroupBox" name="com2_groupBox">
@@ -1317,7 +1400,7 @@ QScrollBar::right-arrow:horizontal {
      <rect>
       <x>19</x>
       <y>916</y>
-      <width>1061</width>
+      <width>1051</width>
       <height>51</height>
      </rect>
     </property>

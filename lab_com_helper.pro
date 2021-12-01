@@ -32,6 +32,7 @@ SOURCES += \
     dataprocess.cpp \
     main.cpp \
     mainwindow.cpp \
+    remotecommand.cpp \
     serialworker.cpp \
     thrustercontrol.cpp \
     timedtask.cpp
@@ -51,6 +52,7 @@ HEADERS += \
     commandvalvescontrol.h \
     dataprocess.h \
     mainwindow.h \
+    remotecommand.h \
     serialworker.h \
     thrustercontrol.h \
     timedtask.h

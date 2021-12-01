@@ -14,6 +14,8 @@
 #include "commandoptcouplerscontrol.h"
 #include "commandvalvescontrol.h"
 #include "timedtask.h"
+#include <QStandardItemModel>
+#include <QMetaType>
 #include <QTimer>
 #include <QDebug>
 
@@ -22,6 +24,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    // 调整表格自适应
+    ui -> Remote_tableWidget -> horizontalHeader() -> setSectionResizeMode(QHeaderView::Stretch);
+    // 注册自定义类型
+    qRegisterMetaType<QList<RemoteCommand>>("QList<RemoteCommand>");
     setCom1Thread();
     setCom2Thread();
     setSerialComNames();
@@ -53,6 +59,8 @@ void MainWindow::setCom1Thread()
             this, &MainWindow::windowMessage);                  // open串口状态
     connect(serialWorkerCom1, &SerialWorker::readyRead,
             this, &MainWindow::com1GetMessage);                 // 读取数据
+    connect(serialWorkerCom1, &SerialWorker::readyReadTable,
+            this, &MainWindow::com1GetTableInfo);               // 读取数据到表格中
     connect(this, &MainWindow::sendCommandCom1,
             serialWorkerCom1, &SerialWorker::doDataSendWork);   // 发送数据
     connect(this, &MainWindow::closePortCom1,
@@ -108,8 +116,21 @@ void MainWindow::setCom2Thread()
 void MainWindow::com1GetMessage(QString message) {
     ui -> com1_return_textBrowser -> append(message);
 }
+
 void MainWindow::com2GetMessage(QString message) {
     ui -> com2_return_textBrowser -> append(message);
+}
+
+void MainWindow::com1GetTableInfo(QList<RemoteCommand> remoteList) {
+    foreach(RemoteCommand remote, remoteList) {
+        int rowCount = ui -> Remote_tableWidget -> rowCount();
+        ui -> Remote_tableWidget -> insertRow(rowCount);//增加一行
+        ui -> Remote_tableWidget -> setItem(rowCount, 0, new QTableWidgetItem(remote.getRemoteNumber()));
+        ui -> Remote_tableWidget -> setItem(rowCount, 1, new QTableWidgetItem(remote.getRemoteName()));
+        ui -> Remote_tableWidget -> setItem(rowCount, 2, new QTableWidgetItem(remote.getRemoteValue()));
+        ui -> Remote_tableWidget -> setItem(rowCount, 3, new QTableWidgetItem(remote.getRemoteSource()));
+//        ui -> Remote_tableWidget ->scrollToBottom();
+    }
 }
 
 /**
@@ -185,7 +206,6 @@ void MainWindow::on_com2_send_pushButton_2_clicked() {
         QString buad = ui -> com2_buad_comboBox -> currentText();
         // 设置标志位 1表示串口界面1
         // 发送到open串口的槽中
-//        qDebug() << com << buad << check;
         emit openPortCom2(com, buad, check, 2);
     } else {
         emit closePortCom2(2);
